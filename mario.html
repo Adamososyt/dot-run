@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click the Dots Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const colors = ['#FF5733', '#33FF57', '#5733FF', '#FF3357', '#57FF33'];
+      let score = 0;
+      const dotLifetime = 5000; // milliseconds
+      const gameTime = 120000; // 2 minutes
+
+      function createDot() {
+        const dot = document.createElement('div');
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        dot.style.backgroundColor = randomColor;
+        dot.className = 'dot';
+        dot.style.left = Math.random() * window.innerWidth + 'px';
+        dot.style.top = Math.random() * window.innerHeight + 'px';
+
+        dot.addEventListener('click', function () {
+          document.body.removeChild(dot);
+          score++;
+          updateScore();
+        });
+
+        document.body.appendChild(dot);
+
+        setTimeout(function () {
+          document.body.removeChild(dot);
+          createDot();
+        }, dotLifetime);
+      }
+
+      function moveDot(dot) {
+        const speedX = (Math.random() - 0.5) * 4; // random X direction
+        const speedY = (Math.random() - 0.5) * 4; // random Y direction
+
+        function update() {
+          const left = parseFloat(dot.style.left) || 0;
+          const top = parseFloat(dot.style.top) || 0;
+
+          dot.style.left = left + speedX + 'px';
+          dot.style.top = top + speedY + 'px';
+
+          if (left > window.innerWidth || left < 0 || top > window.innerHeight || top < 0) {
+            document.body.removeChild(dot);
+            createDot();
+          } else {
+            requestAnimationFrame(update);
+          }
+        }
+
+        requestAnimationFrame(update);
+      }
+
+      function updateScore() {
+        document.getElementById('score').innerText = 'Score: ' + score;
+      }
+
+      setTimeout(function () {
+        alert('Game Over! Your final score is ' + score);
+      }, gameTime);
+
+      setInterval(createDot, 1000);
+      setInterval(function () {
+        const movingDots = document.querySelectorAll('.dot');
+        movingDots.forEach(moveDot);
+      }, 1000);
+    });
+  </script>
+
+  <div id="score" style="position: absolute; top: 10px; left: 10px; color: #696969; font-size: 24px;">Score: 0</div>
+</body>
+</html>
